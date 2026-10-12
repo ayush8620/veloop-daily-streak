@@ -1,0 +1,163 @@
+.page { min-height: 100vh; padding: 24px 20px; }
+
+.frame {
+  max-width: 1500px;
+  margin: 0 auto;
+  border-radius: 22px;
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  background: linear-gradient(180deg, rgba(19, 12, 42, 0.92) 0%, rgba(11, 7, 25, 0.95) 100%);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+}
+
+.body { padding: 18px 24px 16px; }
+.top { margin-bottom: 4px; }
+
+.streakRow { display: none; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+  color: #d8d2ef;
+  font-size: 0.92rem;
+  position: relative;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.35), transparent);
+  min-width: 20px;
+}
+.spark { color: #a78bfa; font-size: 0.8rem; }
+.nextIn {
+  order: 10;
+  flex-basis: 100%;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.nextIn b { color: var(--gold); font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.reset {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(127, 29, 29, 0.18);
+  color: #fecaca;
+  font-size: 0.88rem;
+}
+.resetText { flex: 1; min-width: 200px; }
+.resetDays { display: flex; gap: 6px; flex-wrap: wrap; }
+.chipDone, .chipMissed { font-size: 0.72rem; padding: 2px 8px; border-radius: 7px; font-weight: 600; }
+.chipDone { background: rgba(34, 197, 94, 0.15); color: #86efac; }
+.chipMissed { background: rgba(248, 113, 113, 0.2); color: #fca5a5; }
+
+.errorState {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  padding: 24px;
+  color: #fca5a5;
+}
+.errorState h2 { color: var(--text); font-size: 1.3rem; margin: 6px 0 0; }
+.errorState p { color: var(--muted); margin: 0 0 8px; max-width: 360px; }
+.retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 600;
+  color: #2a1a00;
+  background: linear-gradient(180deg, #fcd34d, #f5a90b);
+}
+
+.footerLinks { display: flex; justify-content: center; gap: 18px; padding-top: 6px; }
+.footerLinks button {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.footerLinks button:hover { color: var(--text); }
+
+.history { max-width: 440px; }
+.historyList { list-style: none; padding: 0; margin: 0; width: 100%; max-height: 50vh; overflow: auto; text-align: left; }
+.historyList li {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: 8px;
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  font-size: 0.85rem;
+}
+.historyAmt { color: var(--gold); font-weight: 600; }
+.historyDate { color: var(--muted); font-size: 0.75rem; }
+
+/* tablet + mobile: show the streak chip row like the mobile design */
+@media (max-width: 991.98px) {
+  .streakRow { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 12px; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  .chip svg { color: #fb923c; }
+  .calendarBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    background: rgba(139, 92, 246, 0.1);
+    color: #ddd6fe;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .page { padding: 12px 12px 20px; }
+  .frame { border: 0; background: transparent; box-shadow: none; border-radius: 0; overflow: visible; }
+  .body { padding: 0; }
+  .top {
+    margin: 0 0 4px;
+    padding: 12px 10px;
+    border-radius: 18px;
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    background: rgba(18, 11, 40, 0.85);
+    --bs-gutter-x: 0;
+  }
+  .divider { font-size: 0.82rem; margin: 14px 0; }
+  .divider::before, .divider::after { display: none; }
+}
+
+@media (max-width: 374.98px) {
+  .chip, .calendarBtn { font-size: 0.72rem; padding: 5px 8px; }
+}
