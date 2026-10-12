@@ -1,0 +1,36 @@
+:root {
+  --bg: #0b0719;
+  --panel: #130d2a;
+  --panel-2: #181033;
+  --border: rgba(139, 92, 246, 0.22);
+  --purple: #8b5cf6;
+  --purple-2: #a78bfa;
+  --gold: #fbbf24;
+  --gold-2: #f59e0b;
+  --green: #22c55e;
+  --text: #f4f1ff;
+  --muted: #a39bc0;
+  --danger: #f87171;
+}
+
+html, body, #root { min-height: 100%; }
+
+body {
+  margin: 0;
+  background: radial-gradient(1200px 600px at 15% -10%, #24124d 0%, transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, #1c0f3d 0%, transparent 55%), var(--bg);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: inherit; }
+a { color: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+.spin { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
