@@ -11,6 +11,8 @@ import StreakStats from './StreakStats';
 import UltimateReward from './UltimateReward';
 import RewardGrid from './RewardGrid';
 import CpaDemo from './CpaDemo';
+import WakingNotice from '../../components/WakingNotice';
+import loadingStyles from './Loading.module.css';
 import StreakLoader from './StreakLoader';
 import StreakSkeleton from './StreakSkeleton';
 import WhyStreak from './WhyStreak';
@@ -102,7 +104,7 @@ export default function DailyStreakPage() {
   }
 
   if (loading || !data) {
-    return <div className={styles.page}><div className={styles.frame}><StreakSkeleton /></div></div>;
+    return <div className={styles.page}><div className={styles.frame}><WakingNotice className={loadingStyles.waking} /><StreakSkeleton /></div></div>;
   }
 
   const { streak, rewards, wallet, nextReward, ultimateReward, lastReset } = data;

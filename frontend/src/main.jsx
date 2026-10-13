@@ -5,8 +5,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/global.css';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
+import { wakeServer } from './services/api';
 import { blockInspect, guardDevtools } from './utils/blockInspect';
 
+wakeServer();
 blockInspect();
 guardDevtools();
 

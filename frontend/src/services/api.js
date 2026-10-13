@@ -4,10 +4,51 @@ export const TOKEN_KEY = 'veloop_token';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-  timeout: 15000,
+  timeout: 70000,
 });
 
+const SLOW_AFTER = 4000;
+let pending = 0;
+let slowTimers = new Map();
+export let serverWaking = false;
+
+function setWaking(v) {
+  if (serverWaking === v) return;
+  serverWaking = v;
+  window.dispatchEvent(new CustomEvent('veloop:waking', { detail: v }));
+}
+
+function track(config) {
+  if (config.__tracked) return;
+  config.__tracked = true;
+  pending += 1;
+  slowTimers.set(config, setTimeout(() => setWaking(true), SLOW_AFTER));
+}
+
+function untrack(config) {
+  if (!config?.__tracked) return;
+  config.__tracked = false;
+  clearTimeout(slowTimers.get(config));
+  slowTimers.delete(config);
+  pending = Math.max(0, pending - 1);
+  if (!pending) setWaking(false);
+}
+
+const RETRYABLE_POSTS = ['/auth/login', '/auth/register'];
+
+function canRetry(err) {
+  const config = err?.config;
+  if (!config || config.__retried || err.response) return false;
+  const method = (config.method || 'get').toLowerCase();
+  return method === 'get' || RETRYABLE_POSTS.some((u) => config.url?.endsWith(u));
+}
+
+export function wakeServer() {
+  api.get('/health', { __silent: true }).catch(() => {});
+}
+
 api.interceptors.request.use((config) => {
+  if (!config.__silent) track(config);
   const token = localStorage.getItem(TOKEN_KEY);
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
@@ -33,8 +74,16 @@ export function toApiError(err) {
 }
 
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    untrack(res.config);
+    return res;
+  },
   (err) => {
+    if (canRetry(err)) {
+      err.config.__retried = true;
+      return api.request(err.config);
+    }
+    untrack(err.config);
     if (err?.response?.status === 401) {
       localStorage.removeItem(TOKEN_KEY);
       window.dispatchEvent(new Event('veloop:logout'));

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Logo from '../../components/Logo';
+import WakingNotice from '../../components/WakingNotice';
 import styles from './Auth.module.css';
 
 export default function AuthForm({ mode }) {
@@ -38,6 +39,7 @@ export default function AuthForm({ mode }) {
         <p className={styles.sub}>{isLogin ? 'Log in to keep your streak going.' : 'Join VELoop Rewards and start your streak.'}</p>
 
         <form className={styles.form} onSubmit={submit} noValidate>
+          {busy && <WakingNotice className={styles.waking} />}
           {error && <div className={styles.error} role="alert">{error}</div>}
           {!isLogin && (
             <div>
