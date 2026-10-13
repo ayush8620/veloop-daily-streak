@@ -34,19 +34,10 @@ export function guardDevtools() {
 
   const check = () => {
     const docked =
-      window.outerWidth - window.innerWidth > 160 ||
-      window.outerHeight - window.innerHeight > 160;
+      window.outerWidth - window.innerWidth > 200 ||
+      window.outerHeight - window.innerHeight > 250;
 
-    // Console getter trick: fires only when devtools is open and rendering logs.
-    let consoleOpen = false;
-    const probe = /./;
-    probe.toString = () => {
-      consoleOpen = true;
-      return '';
-    };
-    console.debug(probe);
-
-    const open = docked || consoleOpen;
+    const open = docked;
 
     // Signed in? Log out and reload. Already logged out? Just keep the page hidden.
     if (open && localStorage.getItem(TOKEN_KEY)) {
