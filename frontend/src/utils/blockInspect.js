@@ -21,7 +21,7 @@ export function blockInspect() {
   });
 }
 
-// Hides the app while devtools looks open (docked panel or paused debugger).
+// Logs out / hides the app as soon as devtools is open (no debugger pause).
 export function guardDevtools() {
   if (!import.meta.env.PROD) return;
 
@@ -37,12 +37,16 @@ export function guardDevtools() {
       window.outerWidth - window.innerWidth > 160 ||
       window.outerHeight - window.innerHeight > 160;
 
-    const start = performance.now();
-    // eslint-disable-next-line no-debugger
-    debugger;
-    const paused = performance.now() - start > 100;
+    // Console getter trick: fires only when devtools is open and rendering logs.
+    let consoleOpen = false;
+    const probe = /./;
+    probe.toString = () => {
+      consoleOpen = true;
+      return '';
+    };
+    console.debug(probe);
 
-    const open = docked || paused;
+    const open = docked || consoleOpen;
 
     // Signed in? Log out and reload. Already logged out? Just keep the page hidden.
     if (open && localStorage.getItem(TOKEN_KEY)) {
@@ -55,5 +59,7 @@ export function guardDevtools() {
     document.getElementById('root').style.visibility = open ? 'hidden' : 'visible';
   };
 
-  setInterval(check, 1000);
+  check();
+  setInterval(check, 500);
+  window.addEventListener('resize', check);
 }
