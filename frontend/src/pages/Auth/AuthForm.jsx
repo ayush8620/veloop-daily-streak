@@ -76,7 +76,6 @@ export default function AuthForm({ mode }) {
             <>Already have an account? <Link to="/login">Log in</Link></>
           )}
         </div>
-        {isLogin && <div className={styles.hint}>Demo: demo@veloop.test / Demo@12345</div>}
       </div>
     </div>
   );

@@ -39,7 +39,7 @@ postman/           Postman collection
 Quickest way (no MongoDB install, data is in memory):
 
 ```bash
-cd backend && npm install && npm run dev:memory     # API on :5000, seeds a demo user
+cd backend && npm install && npm run dev:memory     # API on :5000, seeds config + rewards
 cd frontend && npm install && npm run dev           # http://localhost:5173
 ```
 
@@ -57,7 +57,7 @@ For a local mongod, start it as a single-node replica set (`mongod --replSet rs0
 
 Frontend: `cp .env.example .env` and set `VITE_API_URL` (default `http://localhost:5000/api`).
 
-Demo login: `demo@veloop.test` / `Demo@12345`
+To get a demo account, set `SEED_DEMO_EMAIL` and `SEED_DEMO_PASSWORD` in `backend/.env` before `npm run seed` (or just register from the UI).
 
 Tests: `cd backend && npm test`
 

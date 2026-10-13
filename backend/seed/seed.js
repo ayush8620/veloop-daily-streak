@@ -14,12 +14,13 @@ async function seedConfig() {
 }
 
 async function seedDemoUser() {
-  const email = process.env.DEMO_EMAIL || 'demo@veloop.test';
-  const password = process.env.DEMO_PASSWORD || 'Demo@12345';
+  const email = process.env.SEED_DEMO_EMAIL;
+  const password = process.env.SEED_DEMO_PASSWORD;
+  if (!email || !password) return null; // nothing to seed without both
   let user = await User.findOne({ email });
   if (!user) user = await User.create({ name: 'Demo User', email, passwordHash: await bcrypt.hash(password, 10) });
   await Wallet.updateOne({ userId: user._id }, { $setOnInsert: { userId: user._id, vesBalance: 100 } }, { upsert: true });
-  return { email, password };
+  return { email };
 }
 
 module.exports = { seedConfig, seedDemoUser };
@@ -29,7 +30,7 @@ if (require.main === module) {
     await connectDB(env.MONGO_URI);
     await seedConfig();
     const demo = await seedDemoUser();
-    console.log(`Seeded ${defaultRewards.length} rewards. Demo login: ${demo.email} / ${demo.password}`);
+    console.log(`Seeded ${defaultRewards.length} rewards.` + (demo ? ` Demo user: ${demo.email}` : ' Demo user skipped (SEED_DEMO_EMAIL/SEED_DEMO_PASSWORD not set).'));
     await mongoose.disconnect();
   })().catch((err) => {
     console.error(err);

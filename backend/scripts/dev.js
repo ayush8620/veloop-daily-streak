@@ -18,5 +18,5 @@ const { MongoMemoryReplSet } = require('mongodb-memory-server');
   await connectDB(env.MONGO_URI);
   await seedConfig();
   const demo = await seedDemoUser();
-  app.listen(env.PORT, () => console.log(`API (in-memory db) on :${env.PORT}  demo: ${demo.email} / ${demo.password}`));
+  app.listen(env.PORT, () => console.log(`API (in-memory db) on :${env.PORT}` + (demo ? `  demo user: ${demo.email}` : '')));
 })();
