@@ -1,3 +1,5 @@
+import { TOKEN_KEY } from '../services/api';
+
 // Blocks right-click and the usual devtools shortcuts in production builds.
 export function blockInspect() {
   if (!import.meta.env.PROD) return;
@@ -41,6 +43,14 @@ export function guardDevtools() {
     const paused = performance.now() - start > 100;
 
     const open = docked || paused;
+
+    // Signed in? Log out and reload. Already logged out? Just keep the page hidden.
+    if (open && localStorage.getItem(TOKEN_KEY)) {
+      localStorage.removeItem(TOKEN_KEY);
+      window.location.replace('/login');
+      return;
+    }
+
     overlay.style.display = open ? 'flex' : 'none';
     document.getElementById('root').style.visibility = open ? 'hidden' : 'visible';
   };
