@@ -22,8 +22,16 @@ export function blockInspect() {
 }
 
 // Logs out / hides the app as soon as devtools is open (no debugger pause).
+function isTouchDevice() {
+  return (
+    navigator.maxTouchPoints > 0 ||
+    window.matchMedia?.('(pointer: coarse)').matches ||
+    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+  );
+}
+
 export function guardDevtools() {
-  if (!import.meta.env.PROD) return;
+  if (!import.meta.env.PROD || isTouchDevice()) return;
 
   const overlay = document.createElement('div');
   overlay.textContent = 'Inspecting is disabled on this site.';
@@ -33,11 +41,11 @@ export function guardDevtools() {
   document.body.appendChild(overlay);
 
   const check = () => {
-    const docked =
+    if (!window.outerWidth || !window.outerHeight) return;
+
+    const open =
       window.outerWidth - window.innerWidth > 200 ||
       window.outerHeight - window.innerHeight > 250;
-
-    const open = docked;
 
     // Signed in? Log out and reload. Already logged out? Just keep the page hidden.
     if (open && localStorage.getItem(TOKEN_KEY)) {
