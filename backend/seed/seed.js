@@ -19,7 +19,7 @@ async function seedDemoUser() {
   if (!email || !password) return null; // nothing to seed without both
   let user = await User.findOne({ email });
   if (!user) user = await User.create({ name: 'Demo User', email, passwordHash: await bcrypt.hash(password, 10) });
-  await Wallet.updateOne({ userId: user._id }, { $setOnInsert: { userId: user._id, vesBalance: 100 } }, { upsert: true });
+  await Wallet.updateOne({ userId: user._id }, { $setOnInsert: { userId: user._id } }, { upsert: true });
   return { email };
 }
 

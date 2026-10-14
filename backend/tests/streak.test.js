@@ -31,6 +31,30 @@ const claim = (token, body = {}, key) => {
 };
 const travel = (hours) => clock.setOffset(clock.getOffset() + hours * HOUR);
 
+describe('new accounts', () => {
+  test('a fresh user starts empty: 0 balance, no streak, no history', async () => {
+    const { token } = await newUser();
+    const res = await get(token);
+    expect(res.body.wallet).toEqual({ ves: 0, giftCardINR: 0 });
+    expect(res.body.streak.currentStreak).toBe(0);
+    expect(res.body.streak.checkedIn).toBe(0);
+    expect(res.body.rewards.map((r) => r.status)).toEqual(['TODAY', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED', 'LOCKED']);
+    expect((await get(token, '/api/daily-streak/history')).body.total).toBe(0);
+    expect((await get(token, '/api/wallet/transactions')).body.total).toBe(0);
+  });
+
+  test('seeded demo user gets no free balance', async () => {
+    const { seedDemoUser } = require('../seed/seed');
+    process.env.SEED_DEMO_EMAIL = 'seeded@test.dev';
+    process.env.SEED_DEMO_PASSWORD = 'Password123';
+    await seedDemoUser();
+    delete process.env.SEED_DEMO_EMAIL;
+    delete process.env.SEED_DEMO_PASSWORD;
+    const login = await request(app).post('/api/auth/login').send({ email: 'seeded@test.dev', password: 'Password123' });
+    expect((await get(login.body.token)).body.wallet.ves).toBe(0);
+  });
+});
+
 describe('auth', () => {
   test('streak APIs need a token', async () => {
     expect((await request(app).get('/api/daily-streak')).status).toBe(401);
