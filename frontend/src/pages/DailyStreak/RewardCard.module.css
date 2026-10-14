@@ -1,4 +1,16 @@
-.grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+
+/* day 7 is the grand reward: takes the whole last row */
+.grid > .card:last-child { grid-column: 1 / -1; padding: 16px 20px; }
+.grid > .card:last-child.locked,
+.grid > .card:last-child.next {
+  background: radial-gradient(120% 140% at 50% 0%, rgba(251, 191, 36, 0.16) 0%, #161031 55%, #110b26 100%);
+}
+.grid > .card:last-child .top { justify-content: center; gap: 8px; }
+.grid > .card:last-child .art { width: 120px; max-width: 120px; }
+.grid > .card:last-child .title { font-size: 1rem; }
+.grid > .card:last-child .value { font-size: 1.8rem; }
+.grid > .card:last-child .action { max-width: 320px; }
 
 .card {
   position: relative;
@@ -118,13 +130,6 @@
 
 .claimShort { display: none; }
 
-/* tablet: 4 + 3 */
-@media (max-width: 1199.98px) {
-  .grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-  .card { grid-column: span 3; }
-  .card:nth-child(n + 5) { grid-column: span 4; }
-}
-
 @media (max-width: 767.98px) {
   .grid { gap: 8px; }
   .card { padding: 10px 6px; border-radius: 14px; }
@@ -140,22 +145,15 @@
   .ribbon { font-size: 0.62rem; padding: 3px 8px; }
   .claimFull { display: none; }
   .claimShort { display: inline; }
-  .card:nth-child(n + 5) .top { justify-content: flex-start; }
-}
-
-/* very small phones: 2 per row, day 7 full width */
-@media (max-width: 374.98px) {
-  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .card, .card:nth-child(n + 5) { grid-column: span 1; }
-  .card:last-child { grid-column: span 2; }
-  .card:last-child .art { width: 40%; }
-  .top, .card:nth-child(n + 5) .top { justify-content: flex-start; }
 }
 
 @media (max-width: 767.98px) {
   .card { padding-top: 20px; }
   .check { top: -7px; right: -7px; width: 20px; height: 20px; box-shadow: 0 0 0 3px #0b0719; }
   .badge { top: 6px; right: 6px; }
-  .card:nth-child(n + 5) .top { padding-right: 60px; }
   .ribbon { border-radius: 0 13px 0 8px; }
+  .grid > .card:last-child { padding: 20px 12px 12px; }
+  .grid > .card:last-child .art { width: 84px; }
+  .grid > .card:last-child .value { font-size: 1.5rem; }
+  .grid > .card:last-child .action { max-width: 240px; }
 }

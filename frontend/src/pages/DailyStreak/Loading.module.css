@@ -49,12 +49,13 @@
 .skStats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .skStats .bone { height: 66px; }
 .skUltimate { min-height: 220px; }
-.skGrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; }
+.skGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.skGrid > :last-child { grid-column: 1 / -1; }
 .skCard { height: 220px; }
 .skInfo { height: 70px; }
 
 @media (max-width: 1199.98px) {
-  .skGrid { grid-template-columns: repeat(4, 1fr); }
+  .skGrid { gap: 8px; }
 }
 @media (max-width: 767.98px) {
   .skeleton { padding: 8px 0; }
