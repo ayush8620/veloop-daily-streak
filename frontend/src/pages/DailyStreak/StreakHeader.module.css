@@ -56,6 +56,22 @@
 }
 .gem { color: #a78bfa; fill: rgba(167, 139, 250, 0.45); }
 
+/* collected VEs pill (desktop + tablet), styled to sit beside the streak pill */
+.coins {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px 8px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(251, 191, 36, 0.32);
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.12), rgba(109, 61, 245, 0.14));
+  box-shadow: 0 0 18px rgba(251, 191, 36, 0.08);
+}
+.coinImg { width: 38px; height: auto; filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.35)); }
+.coinValue { color: #fde68a; font-weight: 700; font-size: 1.05rem; line-height: 1.2; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.coinValue span { font-size: 0.8rem; font-weight: 600; color: var(--gold); }
+
 /* angled streak pill, flush with the top-right corner like the design */
 .badge {
   display: flex;
@@ -71,6 +87,9 @@
 .badgeSub { color: #d8d2ef; font-size: 0.8rem; }
 
 @media (max-width: 991.98px) {
+  .coins { padding: 6px 12px 6px 8px; gap: 8px; }
+  .coinImg { width: 30px; }
+  .coins .badgeSub { display: none; }
   .subtitle { font-size: 0.8rem; }
   .badge { padding: 10px 20px 10px 36px; }
 }
@@ -79,7 +98,7 @@
   .header { padding: 4px 0 14px; min-height: 0; border-bottom: 0; align-items: center; gap: 6px; }
   .back { display: inline-flex; width: 34px; }
   .titleWrap { padding: 0; }
-  .icon, .subtitle, .badge { display: none; }
+  .icon, .subtitle, .badge, .coins { display: none; }
   .titleFlame { display: inline; }
   .title { font-size: 1.2rem; }
   .right { align-items: center; }

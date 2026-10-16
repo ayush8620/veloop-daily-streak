@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CalendarDays, Gem } from 'lucide-react';
-import { flame } from '../../assets/veloop';
+import { flame, vesCoin } from '../../assets/veloop';
 import styles from './StreakHeader.module.css';
 
 export default function StreakHeader({ streak, wallet }) {
@@ -28,6 +28,13 @@ export default function StreakHeader({ streak, wallet }) {
         <div className={styles.balance} title="VEs balance">
           <Gem size={18} className={styles.gem} />
           <span>{wallet.ves}</span>
+        </div>
+        <div className={styles.coins} aria-label={`${wallet.ves} VEs collected`}>
+          <img src={vesCoin} alt="" className={styles.coinImg} />
+          <div>
+            <div className={styles.coinValue}>{wallet.ves} <span>VEs</span></div>
+            <div className={styles.badgeSub}>Coins collected</div>
+          </div>
         </div>
         <div className={styles.badge}>
           <img src={flame} alt="" className={styles.flame} />
