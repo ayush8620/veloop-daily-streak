@@ -51,6 +51,8 @@ export default function RewardCard({ card, onClaim, claiming, serverNow, onUnloc
   return (
     <div
       className={`${styles.card} ${STATE_CLASS[status] || styles.locked} ${ultimate ? styles.ultimate : ''} ${card.isNext ? styles.next : ''}`}
+      role="group"
+      aria-label={`Day ${day}: ${reward.title}, ${value} ${unit}, ${status.toLowerCase()}`}
       data-status={status}
       data-day={day}
     >

@@ -2,17 +2,17 @@
   height: 100%;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px 24px;
+  gap: 10px;
+  padding: 18px 26px 18px 14px;
   border-radius: 18px;
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  background: radial-gradient(80% 90% at 30% 55%, rgba(124, 58, 237, 0.35) 0%, transparent 70%), #120b28;
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  background: radial-gradient(70% 90% at 30% 60%, rgba(124, 58, 237, 0.28) 0%, transparent 70%), rgba(18, 11, 40, 0.9);
 }
 
-.art { width: 52%; max-width: 260px; flex-shrink: 0; }
-.info { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
-.kicker { color: var(--purple-2); font-weight: 600; font-size: 1.15rem; }
-.value { font-size: 2.8rem; font-weight: 800; line-height: 1; }
+.art { width: 55%; max-width: 330px; flex-shrink: 0; }
+.info { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; min-width: 0; }
+.kicker { color: #b794ff; font-weight: 600; font-size: 1.2rem; }
+.value { font-size: 3rem; font-weight: 800; line-height: 1; }
 
 .pill {
   display: inline-flex;
@@ -21,8 +21,8 @@
   padding: 8px 14px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.92rem;
 }
 .amazonMark {
   width: 24px;
@@ -37,60 +37,62 @@
   font-size: 0.9rem;
   line-height: 1;
   padding-bottom: 3px;
+  flex-shrink: 0;
 }
 
-.unlockDesktop { color: #d8d2ef; font-size: 0.95rem; margin-top: 6px; }
+.unlockDesktop { color: #d8d2ef; font-size: 0.98rem; margin-top: 4px; }
 .unlockDesktop span { color: var(--gold); font-weight: 600; }
 .unlockMobile { display: none; }
+.day { color: var(--gold); font-weight: 600; }
 
-@media (max-width: 991.98px) {
-  .box { padding: 14px; gap: 10px; }
-  .art { width: 40%; }
-  .info { align-items: flex-start; text-align: left; }
-  .value { font-size: 2.2rem; }
+/* tablet + mobile: art | info | lock column (mobile design) */
+@media (max-width: 1199.98px) {
+  .box { padding: 14px 18px 14px 10px; gap: 12px; }
+  .art { width: 38%; max-width: 280px; }
+  .info { align-items: flex-start; text-align: left; gap: 8px; }
+  .value { font-size: 2.5rem; }
   .unlockDesktop { display: none; }
   .unlockMobile {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
     color: #d8d2ef;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     text-align: center;
     flex-shrink: 0;
+    padding-left: 14px;
+    border-left: 1px solid rgba(139, 92, 246, 0.18);
   }
   .lockCircle {
-    width: 48px;
-    height: 48px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     border: 1px solid rgba(139, 92, 246, 0.35);
-    background: rgba(139, 92, 246, 0.12);
+    background: rgba(139, 92, 246, 0.14);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: #c4b5fd;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
-  .day { color: var(--gold); font-weight: 600; }
-}
-
-@media (max-width: 380px) {
-  .kicker { font-size: 0.95rem; }
-  .value { font-size: 1.8rem; }
-  .pill { font-size: 0.75rem; padding: 6px 8px; }
-  .lockCircle { width: 38px; height: 38px; }
 }
 
 @media (max-width: 767.98px) {
-  .art { width: 38%; }
-  .kicker { font-size: 1rem; white-space: nowrap; }
-  .pill { white-space: nowrap; font-size: 0.76rem; padding: 6px 10px; }
+  .box { gap: 6px; padding: 10px 10px 10px 4px; border-radius: 14px; }
+  .art { width: 40%; }
+  .kicker { font-size: 0.98rem; white-space: nowrap; }
+  .value { font-size: 2rem; }
+  .pill { font-size: 0.74rem; padding: 5px 8px; gap: 6px; }
+  .amazonMark { width: 20px; height: 20px; font-size: 0.78rem; }
+  .unlockMobile { font-size: 0.74rem; padding-left: 8px; border-left: 0; }
+  .lockCircle { width: 46px; height: 46px; }
 }
 
-@media (max-width: 767.98px) {
-  .box { gap: 6px; padding: 12px 10px; }
+@media (max-width: 374.98px) {
   .art { width: 34%; }
-  .info { min-width: 0; }
-  .pill { white-space: normal; font-size: 0.72rem; gap: 6px; }
-  .unlockMobile { font-size: 0.74rem; }
+  .kicker { font-size: 0.86rem; }
+  .value { font-size: 1.6rem; }
+  .pill { font-size: 0.66rem; }
+  .lockCircle { width: 36px; height: 36px; }
 }

@@ -1,7 +1,7 @@
 .page { min-height: 100vh; padding: 24px 20px; }
 
 .frame {
-  max-width: 1500px;
+  max-width: 1600px;
   margin: 0 auto;
   border-radius: 22px;
   border: 1px solid rgba(139, 92, 246, 0.28);
@@ -10,7 +10,8 @@
   overflow: hidden;
 }
 
-.body { padding: 18px 24px 16px; }
+.body { padding: 22px 28px 16px; }
+@media (max-width: 1199.98px) { .body { padding: 18px 20px 14px; } }
 .top { margin-bottom: 4px; }
 
 .streakRow { display: none; }
@@ -113,8 +114,9 @@
 .historyAmt { color: var(--gold); font-weight: 600; }
 .historyDate { color: var(--muted); font-size: 0.75rem; }
 
-/* tablet + mobile: show the streak chip row like the mobile design */
-@media (max-width: 991.98px) {
+/* mobile: streak chip row like the mobile design */
+.chipFlame { width: 16px; height: auto; }
+@media (max-width: 767.98px) {
   .streakRow { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 12px; }
   .chip {
     display: inline-flex;
@@ -128,7 +130,6 @@
     font-weight: 600;
     font-size: 0.85rem;
   }
-  .chip svg { color: #fb923c; }
   .calendarBtn {
     display: inline-flex;
     align-items: center;

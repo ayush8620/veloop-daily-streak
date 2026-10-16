@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CalendarCheck2, Flame, Gem } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Gem } from 'lucide-react';
+import { flame } from '../../assets/veloop';
 import styles from './StreakHeader.module.css';
 
 export default function StreakHeader({ streak, wallet }) {
@@ -14,10 +15,10 @@ export default function StreakHeader({ streak, wallet }) {
       </button>
 
       <div className={styles.titleWrap}>
-        <span className={styles.icon}><CalendarCheck2 size={22} /></span>
-        <div>
+        <span className={styles.icon}><CalendarDays size={22} /></span>
+        <div className={styles.titleText}>
           <h1 className={styles.title}>
-            Daily Streak <Flame size={18} className={styles.titleFlame} />
+            Daily Streak <img src={flame} alt="" className={styles.titleFlame} />
           </h1>
           <p className={styles.subtitle}>Login daily, maintain your streak, and unlock bigger rewards every day!</p>
         </div>
@@ -29,7 +30,7 @@ export default function StreakHeader({ streak, wallet }) {
           <span>{wallet.ves}</span>
         </div>
         <div className={styles.badge}>
-          <Flame size={30} className={styles.flame} />
+          <img src={flame} alt="" className={styles.flame} />
           <div>
             <div className={styles.badgeTitle}>{count} Day Streak</div>
             <div className={styles.badgeSub}>{count > 0 ? 'Keep it going!' : 'Start your streak today'}</div>

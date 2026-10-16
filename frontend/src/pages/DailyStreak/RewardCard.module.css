@@ -1,16 +1,5 @@
-.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-
-/* day 7 is the grand reward: takes the whole last row */
-.grid > .card:last-child { grid-column: 1 / -1; padding: 16px 20px; }
-.grid > .card:last-child.locked,
-.grid > .card:last-child.next {
-  background: radial-gradient(120% 140% at 50% 0%, rgba(251, 191, 36, 0.16) 0%, #161031 55%, #110b26 100%);
-}
-.grid > .card:last-child .top { justify-content: center; gap: 8px; }
-.grid > .card:last-child .art { width: 120px; max-width: 120px; }
-.grid > .card:last-child .title { font-size: 1rem; }
-.grid > .card:last-child .value { font-size: 1.8rem; }
-.grid > .card:last-child .action { max-width: 320px; }
+/* desktop + tablet: 3 + 3, then day 7 as a highlighted full-width card */
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 
 .card {
   position: relative;
@@ -25,7 +14,10 @@
   min-width: 0;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.card:hover { transform: translateY(-2px); }
+.card:hover { transform: translateY(-3px); }
+.locked:hover { box-shadow: 0 10px 28px rgba(76, 29, 149, 0.35); border-color: rgba(167, 139, 250, 0.45); }
+.card:focus-within { border-color: rgba(251, 191, 36, 0.9); }
+.btnClaim:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .claimed {
   border-color: rgba(34, 197, 94, 0.75);
@@ -90,12 +82,14 @@
 }
 .ribbonNext { background: rgba(139, 92, 246, 0.85); color: #fff; }
 
-.art { width: 72%; max-width: 86px; aspect-ratio: 1; margin: 10px 0 6px; }
+.art { width: 100%; height: 96px; margin: 12px 0 8px; display: flex; justify-content: center; }
+.art img { max-width: 120px; }
 
 .title { font-size: 0.85rem; font-weight: 600; color: #f1edff; white-space: nowrap; }
 .value { font-size: 1.45rem; font-weight: 700; line-height: 1.2; color: var(--purple-2); }
 .claimed .value { color: #4ade80; }
 .today .value, .valueGold { color: var(--gold); }
+.claimed .value { color: #4ade80; }
 .unit { font-size: 0.74rem; color: var(--muted); margin-bottom: 10px; white-space: nowrap; }
 
 .action { width: 100%; margin-top: auto; }
@@ -130,30 +124,81 @@
 
 .claimShort { display: none; }
 
+/* day 7: gold VIP card */
+.ultimate.locked, .ultimate.next {
+  background: radial-gradient(120% 90% at 50% 0%, rgba(251, 191, 36, 0.14) 0%, #171030 60%, #110b26 100%);
+}
+
+.art { height: 110px; }
+
+/* day 7: full-width highlighted card, everything centred on the crown */
+@media (min-width: 768px) {
+  .grid > .ultimate {
+    grid-column: 1 / -1;
+    align-items: center;
+    text-align: center;
+    padding: 18px 24px 22px;
+    overflow: hidden;
+    box-shadow: 0 0 34px rgba(251, 191, 36, 0.22), inset 0 0 40px rgba(251, 191, 36, 0.05);
+    background: radial-gradient(45% 75% at 50% 42%, rgba(251, 191, 36, 0.16) 0%, transparent 70%),
+      radial-gradient(90% 120% at 50% 100%, rgba(124, 58, 237, 0.22) 0%, transparent 65%), #150e2e;
+  }
+  .grid > .ultimate .top { justify-content: space-between; }
+  .grid > .ultimate .art { height: 200px; margin: 22px 0 40px; }
+  .grid > .ultimate .art img { max-width: 340px; }
+  .grid > .ultimate .day, .grid > .ultimate .badge { font-size: 0.85rem; padding: 4px 12px; }
+  .grid > .ultimate .title { font-size: 1.15rem; }
+  .grid > .ultimate .value { font-size: 2.3rem; }
+  .grid > .ultimate .unit { font-size: 0.9rem; margin-bottom: 14px; }
+  .grid > .ultimate .action { width: 100%; max-width: 300px; }
+  .grid > .ultimate .btn { min-height: 44px; font-size: 0.95rem; }
+}
+
+@media (min-width: 1600px) {
+  .grid { gap: 20px; }
+  .art { height: 128px; }
+  .title { font-size: 0.98rem; }
+  .value { font-size: 1.7rem; }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .grid { gap: 12px; }
+  .art { height: 92px; }
+  .grid > .ultimate .art { height: 140px; }
+  .grid > .ultimate .value { font-size: 2rem; }
+}
+
+/* mobile design: 4 cards then 3 wider cards */
 @media (max-width: 767.98px) {
-  .grid { gap: 8px; }
-  .card { padding: 10px 6px; border-radius: 14px; }
-  .art { width: 64%; margin: 6px 0 4px; }
+  .grid { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; }
+  .grid > .card { grid-column: span 3; }
+  .grid > .card:nth-child(n + 5) { grid-column: span 4; }
+  .card { padding: 20px 6px 10px; border-radius: 14px; }
+  .card:hover { transform: none; }
+  .art { height: 50px; margin: 6px 0 4px; }
+  .grid > .card:nth-child(n + 5) .art { height: 54px; }
   .title { font-size: 0.74rem; }
   .value { font-size: 1.2rem; }
-  .unit { font-size: 0.64rem; margin-bottom: 8px; }
-  .btn { font-size: 0.72rem; min-height: 30px; gap: 4px; }
+  .unit { font-size: 0.6rem; margin-bottom: 8px; white-space: normal; line-height: 1.2; }
+  .btn { font-size: 0.72rem; min-height: 30px; gap: 4px; border-radius: 8px; }
   .day { font-size: 0.68rem; padding: 2px 8px; }
-  .top { justify-content: center; gap: 4px; }
-  .check, .badge { position: absolute; top: 8px; right: 6px; }
-  .badge { font-size: 0.6rem; padding: 2px 6px; }
-  .ribbon { font-size: 0.62rem; padding: 3px 8px; }
+  .top { justify-content: center; gap: 4px; position: absolute; top: 6px; left: 0; right: 0; min-height: 0; }
+  .check { position: absolute; top: -13px; right: -1px; width: 20px; height: 20px; box-shadow: 0 0 0 3px #0b0719; }
+  .badge { position: absolute; top: -9px; right: 4px; font-size: 0.6rem; padding: 2px 6px; }
+  .grid > .card:nth-child(n + 5) .top { justify-content: space-between; padding: 0 8px; }
+  .grid > .card:nth-child(n + 5) .badge { position: static; }
+  .ribbon { top: -9px; right: 4px; font-size: 0.6rem; padding: 2px 7px; border-radius: 6px; }
   .claimFull { display: none; }
   .claimShort { display: inline; }
 }
 
-@media (max-width: 767.98px) {
-  .card { padding-top: 20px; }
-  .check { top: -7px; right: -7px; width: 20px; height: 20px; box-shadow: 0 0 0 3px #0b0719; }
-  .badge { top: 6px; right: 6px; }
-  .ribbon { border-radius: 0 13px 0 8px; }
-  .grid > .card:last-child { padding: 20px 12px 12px; }
-  .grid > .card:last-child .art { width: 84px; }
-  .grid > .card:last-child .value { font-size: 1.5rem; }
-  .grid > .card:last-child .action { max-width: 240px; }
+/* very small phones: 2 per row, day 7 full width */
+@media (max-width: 359.98px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid > .card, .grid > .card:nth-child(n + 5) { grid-column: span 1; }
+  .grid > .card:last-child { grid-column: 1 / -1; }
+  .art, .grid > .card:nth-child(n + 5) .art { height: 64px; }
+  .grid > .card:last-child .action { max-width: 220px; }
 }
+.top { z-index: 2; } @media (min-width: 768px) { .top { position: relative; } }
+.day { box-shadow: inset 0 0 0 40px rgba(20, 13, 44, 0.55); }

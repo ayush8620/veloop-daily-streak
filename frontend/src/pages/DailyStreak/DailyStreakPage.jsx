@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CalendarDays, ChevronRight, Flame, LogOut } from 'lucide-react';
+import { CalendarDays, ChevronRight, LogOut } from 'lucide-react';
+import { flame } from '../../assets/veloop';
 import useStreak from '../../hooks/useStreak';
 import useCountdown from '../../hooks/useCountdown';
 import { useAuth } from '../../context/AuthContext';
@@ -116,7 +117,7 @@ export default function DailyStreakPage() {
       <div className={styles.frame}>
         <StreakHeader streak={streak} wallet={wallet} />
 
-        <div className={styles.body}>
+        <main className={styles.body}>
           <div className="d-md-none mb-3">
             <HeroMobile />
           </div>
@@ -124,19 +125,19 @@ export default function DailyStreakPage() {
           <ResetBanner reset={lastReset} />
 
           <div className={`row g-3 ${styles.top}`}>
-            <div className="col-12 col-lg-7 d-flex flex-column">
+            <div className="col-12 col-xl-7 d-flex flex-column">
               <div className="d-none d-md-block">
                 <HeroDesktop />
               </div>
               <div className={styles.streakRow}>
-                <span className={styles.chip}><Flame size={16} /> {streak.currentStreak} Day Streak</span>
+                <span className={styles.chip}><img src={flame} alt="" className={styles.chipFlame} /> {streak.currentStreak} Day Streak</span>
                 <button type="button" className={styles.calendarBtn} onClick={() => setHistoryOpen(true)}>
                   <CalendarDays size={15} /> Streak Calendar <ChevronRight size={14} />
                 </button>
               </div>
               <StreakStats streak={streak} nextReward={nextReward} />
             </div>
-            <div className="col-12 col-lg-5">
+            <div className="col-12 col-xl-5">
               <UltimateReward reward={ultimateReward} card={ultimateCard} />
             </div>
           </div>
@@ -163,7 +164,7 @@ export default function DailyStreakPage() {
             <button type="button" onClick={() => setHistoryOpen(true)}>History</button>
             <button type="button" onClick={logout}><LogOut size={13} /> Log out</button>
           </div>
-        </div>
+        </main>
       </div>
 
       <CpaDemo

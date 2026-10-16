@@ -1,20 +1,18 @@
 import { motion } from 'framer-motion';
-import heroGift from '../../assets/rewards/hero-gift.png';
-import calendar from '../../assets/rewards/calendar.png';
-import giftBox from '../../assets/rewards/gift-box-mobile.png';
+import { topLeft, mobileHero } from '../../assets/veloop';
 import styles from './HeroBanner.module.css';
 
 export function HeroDesktop() {
   return (
     <div className={styles.hero}>
       <motion.img
-        src={heroGift}
+        src={topLeft}
         alt=""
         className={styles.heroArt}
         animate={{ y: [0, -6, 0] }}
         transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
       />
-      <div>
+      <div className={styles.heroText}>
         <h2 className={styles.heading}>
           Daily Check-In
           <span className={styles.gold}>Rewards</span>
@@ -29,25 +27,14 @@ export function HeroDesktop() {
   );
 }
 
+// The supplied mobile hero is a finished banner (artwork + headline), used as-is.
 export function HeroMobile() {
   return (
     <div className={styles.banner}>
-      <img src={calendar} alt="" className={styles.calendar} />
-      <div className={styles.bannerText}>
-        <h2 className={styles.bannerTitle}>
-          Login Daily &amp; Earn
-          <span className={styles.gold}>Bigger Rewards!</span>
-        </h2>
-        <p className={styles.bannerCopy}>
-          Maintain your streak and unlock <span className={styles.accent}>exciting rewards</span> every day.
-        </p>
-      </div>
-      <motion.img
-        src={giftBox}
-        alt=""
-        className={styles.bannerGift}
-        animate={{ y: [0, -4, 0], rotate: [0, -2, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+      <img
+        src={mobileHero}
+        alt="Login Daily & Earn Bigger Rewards! Maintain your streak and unlock exciting rewards every day."
+        className={styles.bannerImg}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
-import crownPodium from '../../assets/rewards/crown-podium.png';
+import { topRight } from '../../assets/veloop';
 import styles from './UltimateReward.module.css';
 
 function Amazon() {
@@ -16,7 +16,7 @@ export default function UltimateReward({ reward, card }) {
   return (
     <div className={styles.box}>
       <motion.img
-        src={crownPodium}
+        src={topRight}
         alt=""
         className={styles.art}
         animate={{ y: [0, -5, 0] }}
