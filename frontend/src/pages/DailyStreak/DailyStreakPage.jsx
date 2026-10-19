@@ -20,6 +20,7 @@ import StreakSkeleton from './StreakSkeleton';
 import WhyStreak from './WhyStreak';
 import TrustFooter from './TrustFooter';
 import ResetBanner from './ResetBanner';
+import WeekComplete from './WeekComplete';
 import loadingStyles from './Loading.module.css';
 import styles from './DailyStreak.module.css';
 
@@ -135,14 +136,14 @@ export default function DailyStreakPage() {
     );
   }
 
-  const { streak, rewards, wallet, nextReward, ultimateReward, lastReset } = data;
+  const { streak, rewards, wallet, nextReward, ultimateReward, lastReset, lastCompleted } = data;
   const ultimateCard = rewards.find((r) => r.day === ultimateReward?.day);
-  const checkedInToday = !streak.canClaim && !!streak.lastClaimedAt;
+  const checkedInToday = !!streak.checkedInToday;
 
   return (
     <div className={styles.page}>
       <div className={styles.frame}>
-        <StreakHeader streak={streak} wallet={wallet} checkedInToday={checkedInToday} />
+        <StreakHeader streak={streak} wallet={wallet} checkedInToday={checkedInToday} weekDone={lastCompleted} />
 
         <main className={styles.body}>
           <div className="d-md-none mb-3">
@@ -156,6 +157,7 @@ export default function DailyStreakPage() {
             </div>
           )}
           <ResetBanner reset={lastReset} />
+          <WeekComplete done={lastCompleted} serverNow={serverNow} onUnlock={refresh} />
 
           <div className={`row g-3 ${styles.top}`}>
             <div className="col-12 col-xl-7 d-flex flex-column">
@@ -163,7 +165,7 @@ export default function DailyStreakPage() {
                 <HeroDesktop />
               </div>
               <div className={styles.streakRow}>
-                <span className={styles.chip}><img src={flame} alt="" className={styles.chipFlame} /> {streak.currentStreak} Day Streak</span>
+                <span className={styles.chip}><img src={flame} alt="" className={styles.chipFlame} /> {lastCompleted && !streak.currentStreak ? lastCompleted.days : streak.currentStreak} Day Streak</span>
                 <Link to="/history" className={styles.calendarBtn}>
                   <CalendarDays size={15} /> Streak Calendar <ChevronRight size={14} />
                 </Link>
@@ -176,6 +178,7 @@ export default function DailyStreakPage() {
           </div>
 
           <StreakStatus
+            weekDone={!!lastCompleted}
             streak={streak}
             rewards={rewards}
             nextReward={nextReward}

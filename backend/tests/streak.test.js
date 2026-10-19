@@ -272,8 +272,52 @@ describe('missed day + full cycle', () => {
       if (d < 7) travel(24.1);
     }
     const res = await claim(token);
-    expect(res.status).toBe(423);
-    expect(res.body.error.code).toBe('LOCKED');
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('ALREADY_CLAIMED');
+  });
+
+  test('after day 7 the finished week is reported until the next cycle starts', async () => {
+    const { token } = await newUser();
+    for (let d = 1; d <= 7; d++) {
+      await claim(token);
+      if (d < 7) travel(24.1);
+    }
+    let res = await get(token);
+    expect(res.body.streak).toMatchObject({ currentDay: 1, canClaim: false, checkedInToday: true });
+    expect(res.body.lastCompleted).toMatchObject({ days: 7, earned: { ves: 60, giftCardINR: 8 } });
+    expect(new Date(res.body.lastCompleted.nextCycleAt).getTime()).toBe(new Date(res.body.streak.nextClaimAt).getTime());
+    expect(res.body.rewards[0]).toMatchObject({ status: 'LOCKED', isNext: true });
+
+    travel(24.1);
+    res = await get(token);
+    expect(res.body.streak.canClaim).toBe(true);
+    expect((await claim(token)).body.claim.day).toBe(1);
+    expect((await get(token)).body.lastCompleted).toBeNull();
+  });
+
+  test('day 7 pays the ₹5 gift card into the gift card balance', async () => {
+    const { token } = await newUser();
+    for (let d = 1; d <= 6; d++) {
+      await claim(token);
+      travel(24.1);
+    }
+    const before = await get(token);
+    expect(before.body.rewards[6]).toMatchObject({ status: 'TODAY', claimable: true });
+    const c = await claim(token, { day: 7 });
+    expect(c.status).toBe(201);
+    expect(c.body.transaction).toMatchObject({ streakDay: 7, amount: 5, currency: 'INR' });
+    expect((await get(token)).body.wallet.giftCardINR).toBe(8);
+  });
+
+  test('reset note goes away once the new day 1 is claimed', async () => {
+    const { token } = await newUser();
+    await claim(token);
+    travel(49);
+    expect((await get(token)).body.lastReset).toBeTruthy();
+    await claim(token);
+    const res = await get(token);
+    expect(res.body.lastReset).toBeNull();
+    expect(res.body.streak).toMatchObject({ currentStreak: 1, checkedInToday: true });
   });
 });
 

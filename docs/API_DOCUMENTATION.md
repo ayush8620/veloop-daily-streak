@@ -31,6 +31,7 @@ Full page state.
     "cycleId": "CYC-...", "status": "ACTIVE",
     "currentStreak": 1, "currentDay": 2, "checkedIn": 1, "totalRewards": 7,
     "canClaim": false,
+    "checkedInToday": true,
     "lastClaimedAt": "2026-10-12T14:00:00.000Z",
     "nextClaimAt": "2026-10-13T14:00:00.000Z",
     "expiresAt": "2026-10-14T14:00:00.000Z",
@@ -44,11 +45,14 @@ Full page state.
     { "day": 3, "status": "LOCKED", "reward": { } }
   ],
   "wallet": { "ves": 5, "giftCardINR": 0 },
-  "lastReset": null
+  "lastReset": null,
+  "lastCompleted": null
 }
 ```
 
-`lastReset` is filled for 48h after a missed-day reset: `{ cycleId, missedDay, previousStreak, resetAt, days: [{ day, status: "CLAIMED" | "MISSED" }] }`.
+`lastReset` is filled for 48h after a missed-day reset, until Day 1 of the new cycle is claimed: `{ cycleId, missedDay, previousStreak, resetAt, days: [{ day, status: "CLAIMED" | "MISSED" }] }`.
+
+`lastCompleted` is filled after Day 7, until Day 1 of the next cycle is claimed: `{ cycleId, days, completedAt, nextCycleAt, earned: { ves, giftCardINR } }`.
 
 ### GET /daily-streak/status
 Smaller version used when the countdown ends: `{ serverTime, streak, today, wallet }`.
@@ -77,9 +81,9 @@ Same Idempotency-Key again returns 200 with `idempotent: true` and the original 
 | 400 | `INVALID_DAY` | body `day` isn't the current day |
 | 400 | `VALIDATION_ERROR` | bad input |
 | 401 | `UNAUTHORIZED` | no/invalid token |
-| 409 | `ALREADY_CLAIMED` | already claimed in this period, or lost a concurrent race |
+| 409 | `ALREADY_CLAIMED` | already claimed in this period (Day 7 included, until the next week opens), or lost a concurrent race |
 | 409 | `PREVIOUS_DAY_MISSING` | previous day record not found |
-| 423 | `LOCKED` | new cycle not unlocked yet (`details.nextClaimAt`) |
+| 423 | `LOCKED` | current day not unlocked yet and nothing was claimed in this period (`details.nextClaimAt`) |
 | 429 | `RATE_LIMITED` | too many requests |
 
 ### GET /daily-streak/history?page=1&limit=20

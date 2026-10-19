@@ -85,7 +85,8 @@
    main nav moves to a bottom tab bar */
 @media (max-width: 767.98px) {
   .topbar { display: none; }
-  .content { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
+  /* room for the fixed tab bar (and the iPhone home indicator) plus some air */
+  .content { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + var(--sp-4)); }
   .tabbar {
     position: fixed;
     z-index: 1000;

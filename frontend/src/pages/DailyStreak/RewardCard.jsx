@@ -12,6 +12,14 @@ const STATE_CLASS = {
   MISSED: styles.missed,
 };
 
+const STATE_LABEL = {
+  CLAIMED: 'claimed',
+  TODAY: 'ready to claim today',
+  AVAILABLE: 'ready to claim',
+  LOCKED: 'locked',
+  MISSED: 'missed',
+};
+
 function Countdown({ target, serverNow, onDone }) {
   const left = useCountdown(target, serverNow, onDone);
   if (left == null) return null;
@@ -45,9 +53,12 @@ export default function RewardCard({ card, onClaim, claiming, serverNow, onUnloc
     action = <span className={`${styles.btn} ${styles.btnMissed}`}><X size={16} /> Missed</span>;
   } else if (card.isNext && card.nextClaimAt) {
     action = (
-      <span className={`${styles.btn} ${styles.btnNext}`} title="Next reward unlocks in">
+      <span className={`${styles.btn} ${styles.btnNext}`}>
         <Clock size={14} />
-        <Countdown target={card.nextClaimAt} serverNow={serverNow} onDone={onUnlock} />
+        <span className={styles.nextText}>
+          <small>Unlocks in</small>
+          <Countdown target={card.nextClaimAt} serverNow={serverNow} onDone={onUnlock} />
+        </span>
       </span>
     );
   } else {
@@ -58,7 +69,7 @@ export default function RewardCard({ card, onClaim, claiming, serverNow, onUnloc
     <div
       className={`${styles.card} ${STATE_CLASS[status] || styles.locked} ${ultimate ? styles.ultimate : ''} ${card.isNext ? styles.next : ''}`}
       role="group"
-      aria-label={`Day ${day}: ${reward.title}, ${value} ${unit}, ${status.toLowerCase()}`}
+      aria-label={`Day ${day}: ${reward.title}, ${value} ${unit}, ${STATE_LABEL[status] || 'locked'}`}
       data-status={status}
       data-day={day}
     >
@@ -71,7 +82,10 @@ export default function RewardCard({ card, onClaim, claiming, serverNow, onUnloc
       {card.isNext && <span className={`${styles.ribbon} ${styles.ribbonNext}`}>Next</span>}
 
       <div className={styles.art}>
-        <RewardArt type={reward.assetType} animate />
+        <RewardArt type={reward.assetType} animate={status !== 'LOCKED' || ultimate} />
+        {status === 'LOCKED' && !card.isNext && (
+          <span className={styles.lockMark} aria-hidden="true"><Lock size={12} strokeWidth={2.5} /></span>
+        )}
       </div>
       <div className={styles.title}>{reward.title}</div>
       <div className={`${styles.value} ${ultimate ? styles.valueGold : ''}`}>{value}</div>

@@ -12,9 +12,9 @@ function NextIn({ target, serverNow, onDone }) {
 
 // The strip between the top section and the cards: what's going on today,
 // what comes next, and the 7-day progress. Everything here is read from the API state.
-export default function StreakStatus({ streak, rewards, nextReward, serverNow, onUnlock, onClaim, claiming }) {
+export default function StreakStatus({ streak, rewards, nextReward, serverNow, onUnlock, onClaim, claiming, weekDone }) {
   const nextCard = rewards.find((r) => r.isNext);
-  const checkedInToday = !streak.canClaim && !!streak.lastClaimedAt && !!nextCard;
+  const checkedInToday = !!streak.checkedInToday && !!nextCard;
 
   return (
     <section className={styles.status} aria-label="Today's streak status">
@@ -22,6 +22,8 @@ export default function StreakStatus({ streak, rewards, nextReward, serverNow, o
         <span className={styles.spark}>✦</span>
         {streak.canClaim ? (
           <span>Your Day {streak.currentDay} reward is ready. Claim it now!</span>
+        ) : weekDone ? (
+          <span>Week complete! All rewards collected.</span>
         ) : (
           <span>Come back tomorrow for more rewards!</span>
         )}

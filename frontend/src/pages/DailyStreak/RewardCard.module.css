@@ -33,10 +33,18 @@
 @keyframes todayGlow {
   50% { box-shadow: 0 0 30px rgba(251, 191, 36, 0.32); }
 }
-.locked { opacity: 1; }
+/* locked days: art pushed back so claimable / claimed cards stand out */
+.locked { border-color: rgba(139, 92, 246, 0.16); background: linear-gradient(180deg, #130d29 0%, #0f0a21 100%); }
+.locked .art img { opacity: 0.55; filter: grayscale(0.45) brightness(0.85); }
+.locked .value { color: #9d8fd0; }
+.locked .title { color: #cfc8ea; }
+.next .art img { opacity: 0.85; filter: none; }
+.next .value { color: var(--purple-2); }
+.claimed .art img { filter: drop-shadow(0 4px 10px rgba(34, 197, 94, 0.18)); }
 .missed { border-color: rgba(248, 113, 113, 0.55); background: linear-gradient(180deg, #2a1218 0%, #170b16 100%); }
 .ultimate { border-color: rgba(251, 191, 36, 0.8); box-shadow: 0 0 20px rgba(251, 191, 36, 0.18); }
-.next { border-color: rgba(167, 139, 250, 0.55); }
+.next { border-color: rgba(167, 139, 250, 0.6); border-style: dashed; background: linear-gradient(180deg, #19113a 0%, #120b28 100%); }
+.ultimate.locked:not(.next) { border-color: rgba(251, 191, 36, 0.45); box-shadow: none; }
 
 .top { width: 100%; display: flex; align-items: center; justify-content: space-between; min-height: 24px; }
 .day {
@@ -72,6 +80,8 @@
   white-space: nowrap;
 }
 .badgeGold { background: rgba(251, 191, 36, 0.25); color: #fde68a; }
+/* the Today / Next ribbon takes the corner; the unit line already says gift card / VEs */
+.today .badge, .next .badge { display: none; }
 
 .ribbon {
   position: absolute;
@@ -86,14 +96,13 @@
 }
 .ribbonNext { background: rgba(139, 92, 246, 0.85); color: #fff; }
 
-.art { width: 100%; height: 96px; margin: 12px 0 8px; display: flex; justify-content: center; }
+.art { position: relative; width: 100%; height: 110px; margin: 12px 0 8px; display: flex; justify-content: center; }
 .art img { max-width: 120px; }
 
 .title { font-size: 0.85rem; font-weight: 600; color: #f1edff; white-space: nowrap; }
 .value { font-size: 1.45rem; font-weight: 700; line-height: 1.2; color: var(--purple-2); }
 .claimed .value { color: #4ade80; }
 .today .value, .valueGold { color: var(--gold); }
-.claimed .value { color: #4ade80; }
 .unit { font-size: 0.74rem; color: var(--muted); margin-bottom: 10px; white-space: nowrap; }
 
 .action { width: 100%; margin-top: auto; }
@@ -126,6 +135,44 @@
 .btnNext { border-color: rgba(167, 139, 250, 0.45); color: #ddd6fe; background: rgba(139, 92, 246, 0.12); }
 .btnMissed { border-color: rgba(248, 113, 113, 0.5); color: #fca5a5; }
 .timer { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+.nextText { display: inline-flex; flex-direction: column; align-items: flex-start; line-height: 1.1; }
+.nextText small { font-size: 0.62rem; font-weight: 500; color: #b9adf0; }
+
+.lockMark {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  translate: -50% 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #241848;
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  color: #ddd6fe;
+  box-shadow: 0 0 0 3px rgba(11, 7, 25, 0.6);
+}
+.ultimate .lockMark { background: #2a1d10; border-color: rgba(251, 191, 36, 0.55); color: #fde68a; }
+
+/* what each card state means, right above the cards */
+.legend {
+  list-style: none;
+  margin: 0 0 var(--sp-3);
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2) var(--sp-4);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+.legend li { display: inline-flex; align-items: center; gap: 5px; }
+.legend_claimed svg { color: #4ade80; }
+.legend_today svg { color: var(--gold); }
+.legend_next svg { color: var(--purple-2); }
+.legend_locked svg { color: #8f86b0; }
 
 .claimShort { display: none; }
 
@@ -134,7 +181,6 @@
   background: radial-gradient(120% 90% at 50% 0%, rgba(251, 191, 36, 0.14) 0%, #171030 60%, #110b26 100%);
 }
 
-.art { height: 110px; }
 
 /* day 7: full-width highlighted card, everything centred on the crown */
 @media (min-width: 768px) {
@@ -149,7 +195,7 @@
       radial-gradient(90% 120% at 50% 100%, rgba(124, 58, 237, 0.22) 0%, transparent 65%), #150e2e;
   }
   .grid > .ultimate .top { justify-content: space-between; }
-  .grid > .ultimate .art { height: 200px; margin: 22px 0 40px; }
+  .grid > .ultimate .art { height: 180px; margin: 16px 0 26px; }
   .grid > .ultimate .art img { max-width: 340px; }
   .grid > .ultimate .day, .grid > .ultimate .badge { font-size: 0.85rem; padding: 4px 12px; }
   .grid > .ultimate .title { font-size: 1.15rem; }
@@ -175,7 +221,12 @@
 
 /* mobile: same 3 + 3 + Day 7 full width as desktop/tablet, just tighter */
 @media (max-width: 767.98px) {
-  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; }
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 10px; }
+  .legend { gap: 6px 12px; font-size: 0.7rem; margin-bottom: 18px; }
+  .btnNext { gap: 4px; }
+  .nextText small { font-size: 0.56rem; }
+  .lockMark { width: 20px; height: 20px; }
+  .lockMark svg { width: 10px; height: 10px; }
   .grid > .card { grid-column: span 1; }
   .card { padding: 34px 6px 10px; border-radius: 14px; }
   .card:hover { transform: none; }
@@ -188,31 +239,45 @@
   .top { justify-content: center; gap: 4px; position: absolute; top: 10px; left: 0; right: 0; min-height: 0; }
   .check { position: absolute; top: -13px; right: -1px; width: 20px; height: 20px; box-shadow: 0 0 0 3px #0b0719; }
   .badge { position: absolute; top: -11px; right: 4px; font-size: 0.6rem; line-height: 1.2; padding: 2px 6px; }
-  /* Today/Next ribbon takes the corner; the unit line already says gift card / VEs */
-  .today .badge, .next .badge { display: none; }
   .ribbon { top: -9px; right: 4px; font-size: 0.6rem; line-height: 1.2; padding: 2px 7px; border-radius: 6px; }
   .claimFull { display: none; }
   .claimShort { display: inline; }
 
-  /* Day 7: the big centred card */
-  .grid > .ultimate { grid-column: 1 / -1; padding: 14px 12px 14px; overflow: hidden; }
-  .grid > .ultimate .top { position: static; justify-content: space-between; padding: 0 2px; }
+  /* Day 7: full-width row, crown on the left and the reward + button on the right,
+     short enough to sit fully above the tab bar */
+  .grid > .ultimate {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 44%) minmax(0, 1fr);
+    grid-template-areas: 'top top' 'art title' 'art value' 'art unit' 'art action';
+    grid-template-rows: auto auto auto auto 1fr;
+    column-gap: 12px;
+    align-items: center;
+    padding: 12px 14px 14px;
+    overflow: hidden;
+  }
+  .grid > .ultimate .top { grid-area: top; position: static; justify-content: space-between; padding: 0; margin-bottom: 4px; }
   .grid > .ultimate .badge { position: static; }
-  .grid > .ultimate .art { height: 120px; margin: 8px 0 10px; }
-  .grid > .ultimate .art img { max-width: 220px; }
-  .grid > .ultimate .title { font-size: 0.95rem; }
-  .grid > .ultimate .value { font-size: 1.7rem; }
-  .grid > .ultimate .unit { font-size: 0.78rem; margin-bottom: 12px; }
-  .grid > .ultimate .action { max-width: 240px; }
+  .grid > .ultimate .art { grid-area: art; height: 128px; margin: 0; align-self: center; }
+  .grid > .ultimate .art img { max-width: 100%; }
+  .grid > .ultimate .title { grid-area: title; font-size: 0.92rem; }
+  .grid > .ultimate .value { grid-area: value; font-size: 1.75rem; }
+  .grid > .ultimate .unit { grid-area: unit; font-size: 0.76rem; margin-bottom: 10px; }
+  .grid > .ultimate .action { grid-area: action; align-self: end; }
   .grid > .ultimate .btn { min-height: 40px; font-size: 0.85rem; }
+  /* the card clips its glow, so the ribbon sits inside, where the VIP badge was */
+  .grid > .ultimate .ribbon { top: 12px; right: 12px; border-radius: 7px; font-size: 0.66rem; padding: 3px 9px; }
 }
-.top { z-index: 2; } @media (min-width: 768px) { .top { position: relative; } }
+.top { z-index: 2; }
+@media (min-width: 768px) { .top { position: relative; } }
 .day { box-shadow: inset 0 0 0 40px rgba(20, 13, 44, 0.55); }
 
 /* text never spills out of the narrow mobile cards */
 .title, .unit { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 359.98px) {
-  .grid { gap: 6px; row-gap: 14px; }
+  .legend { gap: 4px 8px; font-size: 0.64rem; }
+  .legend svg { width: 11px; height: 11px; }
+  .grid { gap: 6px; row-gap: 16px; }
   .card { padding-left: 4px; padding-right: 4px; }
   .art { height: 52px; }
   .title { font-size: 0.68rem; }
