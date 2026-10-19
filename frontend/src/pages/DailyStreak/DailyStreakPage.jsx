@@ -1,46 +1,43 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CalendarDays, ChevronRight, LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { CalendarDays, ChevronRight } from 'lucide-react';
 import { flame } from '../../assets/veloop';
 import useStreak from '../../hooks/useStreak';
-import useCountdown from '../../hooks/useCountdown';
-import { useAuth } from '../../context/AuthContext';
 import * as streakApi from '../../services/streakApi';
-import { formatDuration } from '../../utils/format';
+import { shortReward, isRetryable } from '../../utils/format';
+import { useToast } from '../../components/Toast';
+import { ErrorView } from '../../components/StateView';
+import WakingNotice from '../../components/WakingNotice';
 import StreakHeader from './StreakHeader';
 import { HeroDesktop, HeroMobile } from './HeroBanner';
 import StreakStats from './StreakStats';
 import UltimateReward from './UltimateReward';
 import RewardGrid from './RewardGrid';
+import StreakStatus from './StreakStatus';
 import CpaDemo from './CpaDemo';
-import WakingNotice from '../../components/WakingNotice';
-import loadingStyles from './Loading.module.css';
 import StreakLoader from './StreakLoader';
 import StreakSkeleton from './StreakSkeleton';
 import WhyStreak from './WhyStreak';
 import TrustFooter from './TrustFooter';
 import ResetBanner from './ResetBanner';
-import ErrorState from './ErrorState';
-import HistoryModal from './HistoryModal';
+import loadingStyles from './Loading.module.css';
 import styles from './DailyStreak.module.css';
 
 const LOADER_MS = 700;
 const AD_MS = 3000;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-function NextIn({ target, serverNow, onDone }) {
-  const left = useCountdown(target, serverNow, onDone);
-  if (left == null || left <= 0) return null;
-  return <span className={styles.nextIn}>Next reward in <b>{formatDuration(left)}</b></span>;
-}
-
 export default function DailyStreakPage() {
   const { data, loading, error, reload, refresh, serverNow, syncClock } = useStreak();
-  const { logout } = useAuth();
+  const toast = useToast();
   const [loaderDone, setLoaderDone] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [cpa, setCpa] = useState({ open: false, phase: 'checking', progress: 0 });
-  const [historyOpen, setHistoryOpen] = useState(false);
   const busy = useRef(false);
+  // reused when the user retries after a network error, so the server
+  // treats it as the same claim (idempotent) and never pays twice
+  const claimKey = useRef(null);
 
   useEffect(() => {
     const t = setTimeout(() => setLoaderDone(true), LOADER_MS);
@@ -58,37 +55,60 @@ export default function DailyStreakPage() {
     if (busy.current) return;
     busy.current = true;
     setClaiming(true);
+    // a retry after a network error goes straight to the claim with the same key:
+    // if the first request did reach the server, it just returns that result
+    const isRetry = !!claimKey.current;
+    if (!isRetry) claimKey.current = streakApi.newKey();
     const target = data?.rewards.find((r) => r.day === data.streak.currentDay);
-    setCpa({ open: true, phase: 'checking', progress: 0, reward: target?.reward });
+    setCpa({ open: true, phase: isRetry ? 'granting' : 'checking', progress: 100, reward: target?.reward });
 
+    let sent = false;
     try {
-      // ask the server first, the button state alone isn't trusted
-      const status = await streakApi.getStatus();
-      syncClock(status.serverTime);
-      if (!status.streak.canClaim) {
-        throw { code: 'LOCKED', message: 'Your next reward is not available yet.' };
-      }
+      if (!isRetry) {
+        // ask the server first, the button state alone isn't trusted
+        const status = await streakApi.getStatus();
+        syncClock(status.serverTime);
+        if (!status.streak.canClaim) {
+          throw { code: 'LOCKED', message: 'Your next reward is not available yet.' };
+        }
 
-      setCpa((c) => ({ ...c, phase: 'ad' }));
-      const steps = 12;
-      for (let i = 1; i <= steps; i++) {
-        await wait(AD_MS / steps);
-        setCpa((c) => ({ ...c, progress: Math.round((i / steps) * 100) }));
+        setCpa((c) => ({ ...c, phase: 'ad', progress: 0 }));
+        const steps = 12;
+        for (let i = 1; i <= steps; i++) {
+          await wait(AD_MS / steps);
+          setCpa((c) => ({ ...c, progress: Math.round((i / steps) * 100) }));
+        }
       }
 
       setCpa((c) => ({ ...c, phase: 'granting' }));
-      const result = await streakApi.claimStreak();
+      sent = true;
+      const result = await streakApi.claimStreak(claimKey.current);
+      claimKey.current = null;
       setCpa((c) => ({ ...c, phase: 'success', result }));
     } catch (err) {
+      if (!sent || !isRetryable(err)) claimKey.current = null;
       setCpa((c) => ({ ...c, phase: 'error', error: err }));
     } finally {
-      await refresh();
+      // unlock first so "Try again" works straight away, then reload the real state
       busy.current = false;
       setClaiming(false);
+      await refresh();
     }
   }, [data, refresh, syncClock]);
 
-  const closeCpa = () => setCpa((c) => ({ ...c, open: false }));
+  const closeCpa = useCallback(() => {
+    if (cpa.phase === 'success' && cpa.result) {
+      const { claim } = cpa.result;
+      toast.success(`${shortReward(claim.reward)} added to your wallet.`, { title: `Day ${claim.day} claimed` });
+    }
+    setCpa((c) => ({ ...c, open: false }));
+  }, [cpa.phase, cpa.result, toast]);
+
+  const retryLoad = async () => {
+    setRetrying(true);
+    await reload();
+    setRetrying(false);
+  };
 
   if (!loaderDone && !data && !error) {
     return <div className={styles.page}><StreakLoader /></div>;
@@ -97,31 +117,44 @@ export default function DailyStreakPage() {
   if (error && !data) {
     return (
       <div className={styles.page}>
-        <div className={styles.frame}>
-          <ErrorState error={error} onRetry={() => reload()} />
+        <div className={`${styles.frame} ${styles.errorFrame}`}>
+          <ErrorView title="Couldn't load your streak" error={error} onRetry={retryLoad} retrying={retrying} />
         </div>
       </div>
     );
   }
 
   if (loading || !data) {
-    return <div className={styles.page}><div className={styles.frame}><WakingNotice className={loadingStyles.waking} /><StreakSkeleton /></div></div>;
+    return (
+      <div className={styles.page}>
+        <div className={styles.frame}>
+          <WakingNotice className={loadingStyles.waking} />
+          <StreakSkeleton />
+        </div>
+      </div>
+    );
   }
 
   const { streak, rewards, wallet, nextReward, ultimateReward, lastReset } = data;
   const ultimateCard = rewards.find((r) => r.day === ultimateReward?.day);
-  const nextCard = rewards.find((r) => r.isNext);
+  const checkedInToday = !streak.canClaim && !!streak.lastClaimedAt;
 
   return (
     <div className={styles.page}>
       <div className={styles.frame}>
-        <StreakHeader streak={streak} wallet={wallet} />
+        <StreakHeader streak={streak} wallet={wallet} checkedInToday={checkedInToday} />
 
         <main className={styles.body}>
           <div className="d-md-none mb-3">
             <HeroMobile />
           </div>
 
+          {error && (
+            <div className={styles.stale} role="status">
+              <span>Couldn&apos;t refresh your streak. Showing the last saved state.</span>
+              <button type="button" onClick={refresh}>Retry</button>
+            </div>
+          )}
           <ResetBanner reset={lastReset} />
 
           <div className={`row g-3 ${styles.top}`}>
@@ -131,9 +164,9 @@ export default function DailyStreakPage() {
               </div>
               <div className={styles.streakRow}>
                 <span className={styles.chip}><img src={flame} alt="" className={styles.chipFlame} /> {streak.currentStreak} Day Streak</span>
-                <button type="button" className={styles.calendarBtn} onClick={() => setHistoryOpen(true)}>
+                <Link to="/history" className={styles.calendarBtn}>
                   <CalendarDays size={15} /> Streak Calendar <ChevronRight size={14} />
-                </button>
+                </Link>
               </div>
               <StreakStats streak={streak} nextReward={nextReward} />
             </div>
@@ -142,16 +175,15 @@ export default function DailyStreakPage() {
             </div>
           </div>
 
-          <div className={styles.divider}>
-            <span className={styles.spark}>✦</span>
-            {streak.canClaim ? (
-              <span>Your reward is ready. Claim it now!</span>
-            ) : (
-              <span>Come back tomorrow for more rewards!</span>
-            )}
-            <span className={styles.spark}>✦</span>
-            {nextCard && <NextIn target={streak.nextClaimAt} serverNow={serverNow} onDone={refresh} />}
-          </div>
+          <StreakStatus
+            streak={streak}
+            rewards={rewards}
+            nextReward={nextReward}
+            serverNow={serverNow}
+            onUnlock={refresh}
+            onClaim={handleClaim}
+            claiming={claiming}
+          />
 
           <RewardGrid cards={rewards} onClaim={handleClaim} claiming={claiming} serverNow={serverNow} onUnlock={refresh} />
 
@@ -159,11 +191,6 @@ export default function DailyStreakPage() {
             <WhyStreak />
           </div>
           <TrustFooter />
-
-          <div className={styles.footerLinks}>
-            <button type="button" onClick={() => setHistoryOpen(true)}>History</button>
-            <button type="button" onClick={logout}><LogOut size={13} /> Log out</button>
-          </div>
         </main>
       </div>
 
@@ -175,8 +202,8 @@ export default function DailyStreakPage() {
         error={cpa.error}
         progress={cpa.progress}
         onClose={closeCpa}
+        onRetry={handleClaim}
       />
-      <HistoryModal open={historyOpen} onClose={() => setHistoryOpen(false)} />
     </div>
   );
 }

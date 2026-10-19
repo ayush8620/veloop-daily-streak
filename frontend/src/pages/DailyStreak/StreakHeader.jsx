@@ -1,18 +1,37 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, CalendarDays, Gem } from 'lucide-react';
 import { flame, vesCoin } from '../../assets/veloop';
+import CountUp from '../../components/CountUp';
 import styles from './StreakHeader.module.css';
 
-export default function StreakHeader({ streak, wallet }) {
-  const navigate = useNavigate();
+// brief gold pulse on the balance when the server reports a higher value
+function useBump(value) {
+  const prev = useRef(value);
+  const [bump, setBump] = useState(false);
+  useEffect(() => {
+    if (value > prev.current) {
+      setBump(true);
+      const t = setTimeout(() => setBump(false), 1200);
+      prev.current = value;
+      return () => clearTimeout(t);
+    }
+    prev.current = value;
+    return undefined;
+  }, [value]);
+  return bump;
+}
+
+export default function StreakHeader({ streak, wallet, checkedInToday }) {
   const count = streak.currentStreak;
-  const back = () => (window.history.length > 1 ? navigate(-1) : navigate('/'));
+  const bump = useBump(wallet.ves);
+  const sub = checkedInToday ? 'Checked in today ✓' : count > 0 ? 'Keep it going!' : 'Start your streak today';
 
   return (
     <header className={styles.header}>
-      <button type="button" className={styles.back} onClick={back} aria-label="Go back">
+      <Link to="/" className={styles.back} aria-label="Back to home">
         <ArrowLeft size={20} />
-      </button>
+      </Link>
 
       <div className={styles.titleWrap}>
         <span className={styles.icon}><CalendarDays size={22} /></span>
@@ -25,14 +44,14 @@ export default function StreakHeader({ streak, wallet }) {
       </div>
 
       <div className={styles.right}>
-        <div className={styles.balance} title="VEs balance">
-          <Gem size={18} className={styles.gem} />
-          <span>{wallet.ves}</span>
+        <div className={`${styles.balance} ${bump ? styles.bump : ''}`} aria-label={`${wallet.ves} VEs balance`}>
+          <Gem size={18} className={styles.gem} aria-hidden="true" />
+          <CountUp value={wallet.ves} />
         </div>
-        <div className={styles.coins} aria-label={`${wallet.ves} VEs collected`}>
+        <div className={`${styles.coins} ${bump ? styles.bump : ''}`} aria-label={`${wallet.ves} VEs collected`}>
           <img src={vesCoin} alt="" className={styles.coinImg} />
-          <div>
-            <div className={styles.coinValue}>{wallet.ves} <span>VEs</span></div>
+          <div aria-hidden="true">
+            <div className={styles.coinValue}><CountUp value={wallet.ves} /> <span>VEs</span></div>
             <div className={styles.badgeSub}>Coins collected</div>
           </div>
         </div>
@@ -40,7 +59,7 @@ export default function StreakHeader({ streak, wallet }) {
           <img src={flame} alt="" className={styles.flame} />
           <div>
             <div className={styles.badgeTitle}>{count} Day Streak</div>
-            <div className={styles.badgeSub}>{count > 0 ? 'Keep it going!' : 'Start your streak today'}</div>
+            <div className={styles.badgeSub}>{sub}</div>
           </div>
         </div>
       </div>

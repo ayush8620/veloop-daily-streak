@@ -1,4 +1,4 @@
-import { Check, CheckCircle2, ChevronRight, Clock, Lock, X } from 'lucide-react';
+import { Check, CheckCircle2, ChevronRight, Clock, Loader2, Lock, X } from 'lucide-react';
 import RewardArt from './RewardArt';
 import { formatDuration, formatReward } from '../../utils/format';
 import useCountdown from '../../hooks/useCountdown';
@@ -29,10 +29,16 @@ export default function RewardCard({ card, onClaim, claiming, serverNow, onUnloc
     action = <span className={`${styles.btn} ${styles.btnClaimed}`}><CheckCircle2 size={16} /> Claimed</span>;
   } else if (canClaim) {
     action = (
-      <button type="button" className={`${styles.btn} ${styles.btnClaim}`} onClick={onClaim} disabled={claiming}>
-        <span className={styles.claimFull}>Claim Reward</span>
-        <span className={styles.claimShort}>Claim Now</span>
-        <ChevronRight size={16} />
+      <button type="button" className={`${styles.btn} ${styles.btnClaim}`} onClick={onClaim} disabled={claiming} aria-busy={claiming}>
+        {claiming ? (
+          <><Loader2 size={15} className="spin" /> <span className={styles.claimFull}>Claiming...</span><span className={styles.claimShort}>Wait</span></>
+        ) : (
+          <>
+            <span className={styles.claimFull}>Claim Reward</span>
+            <span className={styles.claimShort}>Claim Now</span>
+            <ChevronRight size={16} />
+          </>
+        )}
       </button>
     );
   } else if (status === 'MISSED') {

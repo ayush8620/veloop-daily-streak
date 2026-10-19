@@ -1,4 +1,5 @@
-// Original VELoop task assets (resized to WebP, transparency kept).
+// Original VELoop task assets, resized to WebP (transparency kept).
+// day_7 is exported larger because it fills the wide Day 7 card.
 import vesCoin from './ves_coin.webp';
 import day4 from './day_4.webp';
 import day5 from './day_5.webp';

@@ -20,7 +20,7 @@
   flex-shrink: 0;
   align-self: center;
 }
-.back:hover { background: rgba(139, 92, 246, 0.18); }
+.back:hover { background: rgba(139, 92, 246, 0.18); color: var(--text); }
 
 .titleWrap { display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1; padding: 16px 0; }
 
@@ -103,4 +103,11 @@
   .title { font-size: 1.2rem; }
   .right { align-items: center; }
   .balance { display: flex; padding: 8px 16px; font-size: 1rem; background: rgba(18, 11, 40, 0.9); }
+}
+
+.bump { animation: bump 1.2s var(--ease); }
+@keyframes bump {
+  0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.5); }
+  40% { box-shadow: 0 0 0 6px rgba(251, 191, 36, 0.18); transform: scale(1.04); }
+  100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); transform: scale(1); }
 }

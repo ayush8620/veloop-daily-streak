@@ -66,7 +66,12 @@ const FRIENDLY = {
 // turn any axios error into { code, message } that is safe to show
 export function toApiError(err) {
   const data = err?.response?.data?.error;
-  if (data) return { status: err.response.status, code: data.code, message: FRIENDLY[data.code] || data.message, details: data.details };
+  if (data) {
+    const status = err.response.status;
+    // 5xx text is never shown as-is, it could be an internal error
+    const message = FRIENDLY[data.code] || (status >= 500 ? 'Unable to process your request. Please try again.' : data.message);
+    return { status, code: data.code, message, details: data.details };
+  }
   if (err?.code === 'ECONNABORTED' || !err?.response) {
     return { status: 0, code: 'NETWORK', message: 'Unable to reach the server. Check your connection and try again.' };
   }
