@@ -57,6 +57,7 @@
 @keyframes bob { 50% { transform: translateY(-4px); } }
 .bone { background: linear-gradient(90deg, #1a1138 0%, #2a1c58 45%, #1a1138 90%); background-size: 200% 100%; }
 .skInfo { height: 70px; }
+.skStatus { height: 44px; width: min(640px, 100%); margin: 0 auto; border-radius: 999px; }
 
 @media (max-width: 1199.98px) {
   .skGrid { gap: 8px; }
@@ -65,9 +66,9 @@
   .skeleton { padding: 8px 0; }
   .skHero { grid-template-columns: 1fr; }
   .skBadge { width: 80px; height: 36px; }
-  .skGrid { grid-template-columns: repeat(12, 1fr); }
-  .skGrid > .skCard { grid-column: span 3; height: 170px; }
-  .skGrid > .skCard:nth-child(n + 5) { grid-column: span 4; }
+  .skGrid { grid-template-columns: repeat(3, 1fr); }
+  .skGrid > .skCard { height: 170px; }
+  .skGrid > :last-child.skCard { height: 220px; }
 }
 
 .waking {

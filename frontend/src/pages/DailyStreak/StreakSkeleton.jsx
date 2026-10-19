@@ -4,7 +4,7 @@ const Bone = ({ className = '', style }) => <div className={`${styles.bone} ${cl
 
 export default function StreakSkeleton() {
   return (
-    <div className={styles.skeleton} aria-busy="true" aria-label="Loading">
+    <div className={styles.skeleton} aria-busy="true" aria-label="Loading your streak" role="status">
       <div className={styles.skHeader}>
         <Bone className={styles.skIcon} />
         <div style={{ flex: 1 }}>
@@ -22,6 +22,7 @@ export default function StreakSkeleton() {
         </div>
         <Bone className={styles.skUltimate} />
       </div>
+      <Bone className={styles.skStatus} />
       <div className={styles.skGrid}>
         {Array.from({ length: 7 }, (_, i) => <Bone key={i} className={styles.skCard} />)}
       </div>
