@@ -41,7 +41,7 @@ export default function HomePage() {
   } else {
     const { streak, rewards, wallet, nextReward, lastReset } = data;
     const nextCard = rewards.find((r) => r.isNext);
-    const checkedIn = !streak.canClaim && !!streak.lastClaimedAt && !!nextCard;
+    const checkedIn = !!streak.checkedInToday && !!nextCard;
 
     body = (
       <div className={styles.grid}>
