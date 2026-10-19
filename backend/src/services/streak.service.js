@@ -103,16 +103,37 @@ async function getRecentReset(userId, cfg, now) {
   return { cycleId: last.cycleId, missedDay: last.missedDay, previousStreak: last.claimedDays, resetAt: last.endedAt, days };
 }
 
+// A cycle finished recently: lets the UI celebrate the week instead of showing
+// seven locked cards while the next cycle waits to unlock.
+async function getRecentCompletion(userId, cycle, cfg, now) {
+  if (cycle.claimedDays > 0) return null;
+  const since = new Date(now.getTime() - 2 * cfg.claimIntervalMs);
+  const last = await StreakCycle.findOne({ userId, status: 'COMPLETED', endedAt: { $gte: since } })
+    .sort({ endedAt: -1 })
+    .lean();
+  if (!last) return null;
+
+  const claims = await StreakClaim.find({ userId, cycleId: last.cycleId }).lean();
+  const earned = { ves: 0, giftCardINR: 0 };
+  for (const c of claims) {
+    if (c.reward.currency === 'INR') earned.giftCardINR += c.reward.amount;
+    else earned.ves += c.reward.amount;
+  }
+  return { cycleId: last.cycleId, days: last.claimedDays, completedAt: last.endedAt, nextCycleAt: cycle.nextClaimAt, earned };
+}
+
 async function getStreakStatus(userId, ctx) {
   const cfg = await rewards.getConfig();
   const cycle = await getActiveCycle(userId, cfg, ctx);
   const now = clock.now();
 
-  const [rewardList, claims, userWallet, lastReset] = await Promise.all([
+  const [rewardList, claims, userWallet, lastReset, lastCompleted] = await Promise.all([
     rewards.getActiveRewards(),
     StreakClaim.find({ userId, cycleId: cycle.cycleId }).lean(),
     wallet.getOrCreateWallet(userId),
-    getRecentReset(userId, cfg, now),
+    // once Day 1 of the new cycle is claimed the reset note is old news
+    cycle.claimedDays === 0 ? getRecentReset(userId, cfg, now) : null,
+    getRecentCompletion(userId, cycle, cfg, now),
   ]);
 
   const currentDay = calculateCurrentDay(cycle);
@@ -131,6 +152,7 @@ async function getStreakStatus(userId, ctx) {
       checkedIn: cycle.claimedDays,
       totalRewards: rewardList.length,
       canClaim,
+      checkedInToday: !canClaim,
       lastClaimedAt: cycle.lastClaimedAt,
       nextClaimAt: cycle.nextClaimAt,
       expiresAt: cycle.expiresAt,
@@ -141,6 +163,7 @@ async function getStreakStatus(userId, ctx) {
     rewards: cards,
     wallet: wallet.toPublicWallet(userWallet),
     lastReset,
+    lastCompleted,
   };
 }
 
@@ -174,7 +197,9 @@ async function claimReward(userId, body = {}, { idempotencyKey, ctx } = {}) {
   const day = cycle.claimedDays + 1;
 
   if (now < cycle.nextClaimAt) {
-    if (cycle.claimedDays > 0) {
+    // a cycle that starts later than it was created follows a finished week, so Day 7 was claimed today
+    const claimedToday = cycle.claimedDays > 0 || cycle.nextClaimAt > cycle.startedAt;
+    if (claimedToday) {
       await reject(userId, 'DUPLICATE_CLAIM', 'ALREADY_CLAIMED', 409, "You've already claimed today's reward.", ctx, {
         nextClaimAt: cycle.nextClaimAt,
       });
