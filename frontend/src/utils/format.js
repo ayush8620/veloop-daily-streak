@@ -16,3 +16,10 @@ export function formatDuration(ms) {
   const s = String(total % 60).padStart(2, '0');
   return `${h}:${m}:${s}`;
 }
+
+export function formatDateTime(value) {
+  return new Date(value).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+}
+
+// errors worth a "Try again" button (network / server), not business rejections
+export const isRetryable = (err) => !err || err.code === 'NETWORK' || (err.status || 0) >= 500;
