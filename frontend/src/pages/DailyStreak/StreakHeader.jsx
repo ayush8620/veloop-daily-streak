@@ -22,10 +22,13 @@ function useBump(value) {
   return bump;
 }
 
-export default function StreakHeader({ streak, wallet, checkedInToday }) {
-  const count = streak.currentStreak;
+export default function StreakHeader({ streak, wallet, checkedInToday, weekDone }) {
+  // between Day 7 and the next week's Day 1 the finished week is still the streak to show
+  const count = weekDone && !streak.currentStreak ? weekDone.days : streak.currentStreak;
   const bump = useBump(wallet.ves);
-  const sub = checkedInToday ? 'Checked in today ✓' : count > 0 ? 'Keep it going!' : 'Start your streak today';
+  let sub = count > 0 ? 'Keep it going!' : 'Start your streak today';
+  if (checkedInToday) sub = 'Checked in today ✓';
+  if (weekDone) sub = 'Week complete!';
 
   return (
     <header className={styles.header}>

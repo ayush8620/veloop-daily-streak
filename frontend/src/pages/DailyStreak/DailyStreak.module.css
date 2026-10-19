@@ -186,3 +186,25 @@
   font-weight: 600;
   font-size: var(--fs-xs);
 }
+
+/* finished week, shown until the next week's Day 1 is claimed */
+.weekDone {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-5);
+  margin-bottom: var(--sp-4);
+  border-radius: var(--r-lg);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  background: radial-gradient(60% 120% at 0% 50%, rgba(251, 191, 36, 0.16) 0%, transparent 70%), rgba(34, 18, 60, 0.7);
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.12);
+}
+.weekDoneArt { width: 84px; height: 72px; object-fit: contain; flex-shrink: 0; }
+.weekDoneText { display: flex; flex-direction: column; gap: 2px; font-size: var(--fs-sm); color: var(--text-2); }
+.weekDoneText strong { display: inline-flex; align-items: center; gap: 6px; color: #fde68a; font-size: var(--fs-md); }
+.weekDoneNext { color: var(--muted); font-size: var(--fs-xs); }
+
+@media (max-width: 767.98px) {
+  .weekDone { padding: var(--sp-3); gap: var(--sp-3); }
+  .weekDoneArt { width: 64px; height: 56px; }
+}
