@@ -8,7 +8,7 @@ Screenshots are in `screenshots/` (desktop, tablet, mobile, loader/skeleton, CPA
 
 ## Stack
 
-- Backend: Node 18+, Express, Mongoose, JWT, bcryptjs, helmet, express-rate-limit, express-validator
+- Backend: Node 18.11+, Express, Mongoose, JWT, bcryptjs, helmet, express-rate-limit, express-validator
 - Frontend: React 18 + Vite, React Router, Bootstrap 5 + CSS Modules, Axios, Lucide icons, Framer Motion
 - DB: MongoDB (needs a replica set for transactions - Atlas has one by default)
 - Tests: Jest + Supertest + mongodb-memory-server
@@ -28,6 +28,10 @@ backend/
   tests/           jest tests
 frontend/
   src/pages/DailyStreak   page + components, each with its own .module.css
+  src/pages/History       claim history (wallet transactions)
+  src/pages/HomePage.jsx  signed-in home: wallet + today's check-in
+  src/components          app layout/nav, toasts, count-up, 7-day progress, empty/error views
+  src/styles              global tokens (spacing, type, colours) + shared ui.module.css
   src/services            api.js (axios), streakApi.js, authApi.js
   src/hooks               useStreak, useCountdown, useServerClock
 docs/              API, database, security, testing notes
@@ -60,6 +64,17 @@ Frontend: `cp .env.example .env` and set `VITE_API_URL` (default `http://localho
 To get a demo account, set `SEED_DEMO_EMAIL` and `SEED_DEMO_PASSWORD` in `backend/.env` before `npm run seed` (or just register from the UI).
 
 Tests: `cd backend && npm test`
+
+## Screens
+
+- `/login`, `/register` - field checks match the backend validators, show/hide password, loading state on submit.
+- `/` - home: VEs and gift card balance, today's check-in (ready / checked in with countdown / reset note) and the 7-day progress.
+- `/daily-streak` - the page from the design. Status strip under the stats shows today's state and the next reward, cards show claimed/today/next/locked/missed.
+- `/history` - every claim from the wallet transactions, grouped by day, with its `STREAK-` reference. Empty and error states included.
+
+One layout ties them together: a top nav on desktop/tablet and a bottom tab bar on phones. Spacing and type come from the tokens in `styles/global.css`.
+
+Feedback states: branded loader, skeletons, disabled + spinner buttons while a request is running, CPA demo with steps, a success screen with the next reward, toasts, friendly errors with retry (a claim retry reuses the same Idempotency-Key, so it can never pay twice), and a "showing last saved state" note if a background refresh fails. Animations are small (float, glow, count-up) and switch off with `prefers-reduced-motion`.
 
 ## How the streak works
 
