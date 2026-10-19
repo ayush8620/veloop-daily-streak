@@ -83,7 +83,7 @@ Each 7-day run is a `StreakCycle`. A cycle stores `claimedDays`, `lastClaimedAt`
 - The current day is always `claimedDays + 1`. The client never sends it (if it does, it has to match or the request is rejected).
 - After a claim: `nextClaimAt = claimedAt + claimIntervalMs`, `expiresAt = nextClaimAt + graceWindowMs`. Both values come from the `StreakConfig` document (24h / 24h by default), so day N+1 can be claimed between 24h and 48h after day N.
 - Missed day: on any status/claim call, if server time is past `expiresAt` the cycle is marked `BROKEN`, a `STREAK_RESET` audit entry is written and a fresh cycle starts at Day 1. Nothing happens just because the browser was closed - it only depends on stored timestamps.
-- After Day 7 the cycle is `COMPLETED` and a new one starts, unlocking one interval later.
+- After Day 7 the cycle is `COMPLETED` and a new one starts, unlocking one interval later. Until then the API returns `lastCompleted` (days, total earned, when the next week opens) and a repeat claim gets `ALREADY_CLAIMED`.
 - Wallet balances are kept when a streak resets.
 
 Card states returned by the API: `CLAIMED`, `TODAY` (claimable now), `LOCKED` (the next day also carries `isNext` + `nextClaimAt` for the countdown), `MISSED` (shown in the reset banner for the broken cycle), and `AVAILABLE` is supported by the UI as a claimable state without the Today ribbon.
